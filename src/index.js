@@ -1,15 +1,38 @@
+const path = require("path");
 const express = require("express");
+const bunyan = require("bunyan");
 const service = require("./todoService.js");
+const fs = require("fs");
 
 const app = express();
 const PORT = 4000;
 
 app.use(express.json());
 
-const withErrorHandling = async (operations, res) => {
+const logFilePath = path.join(__dirname, "todoApi.log");
+
+if (!fs.existsSync(logFilePath)) {
+  fs.writeFileSync(logFilePath, "");
+}
+
+const log = bunyan.createLogger({
+  name: "myTodoApi",
+  streams: [
+    {
+      type: "rotating-file",
+      path: logFilePath,
+      period: "1m", // monthly rotation
+      count: 3, // keep 3 back copies
+    },
+  ],
+  serializers: bunyan.stdSerializers,
+});
+
+const withErrorHandling = async (operations, req, res) => {
   try {
     await operations();
   } catch (error) {
+    log.error({ err: error, req: req });
     res.status(500).json({ message: "Error during operation: ", error });
   }
 };
@@ -42,4 +65,9 @@ app.delete("/api/todos/:id", async (req, res) => {
   }, res);
 });
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+app.get("*", (req, res) => {
+  log.info({ req: req }, "Undefined route");
+  res.send("Undefined route");
+});
+
+app.listen(PORT, () => log.info(`Listening on port ${PORT}`));

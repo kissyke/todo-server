@@ -4,13 +4,19 @@
   "description": "Mentoring demo app - server",
   "main": "index.js",
   "dependencies": {
+    "bunyan": "^1.8.14",
     "express": "^4.17.1",
     "nedb": "^1.8.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "webpack": "^5.10.0",
+    "webpack-cli": "^4.2.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./src/index.js"
+    "start": "node ./src/index.js",
+    "build": "webpack",
+    "prod": "node dist/api.bundle.js"
   },
   "repository": {
     "type": "git",
