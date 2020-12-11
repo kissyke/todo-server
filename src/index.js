@@ -5,7 +5,7 @@ const service = require("./todoService.js");
 const fs = require("fs");
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 
@@ -70,4 +70,7 @@ app.get("*", (req, res) => {
   res.send("Undefined route");
 });
 
-app.listen(PORT, () => log.info(`Listening on port ${PORT}`));
+app.listen(PORT, () => {
+  log.info(`Listening on port ${PORT}`);
+  console.info(`Listening on port ${PORT}`);
+});
